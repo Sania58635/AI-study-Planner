@@ -16,16 +16,30 @@ def home():
     flashcards = []
 
     if request.method == "POST":
-        notes = request.form.get("notes")
+        form_type = request.form.get("form_type")
 
-        if notes:
-            sentences = [s.strip() for s in notes.split(".") if s.strip()]
+        if form_type == "assignment":
+            new_course = {
+                "name": request.form.get("course_name"),
+                "deadline": request.form.get("deadline"),
+                "due_date": request.form.get("due_date"),
+                "progress": int(request.form.get("progress")),
+            }
 
-            for sentence in sentences[:5]:
-                flashcards.append({
-                    "question": f"What is important about: {sentence[:50]}?",
-                    "answer": sentence
-                })
+            courses.append(new_course)
+            return render_template("index.html", courses=courses, flashcards=flashcards)
+
+        if form_type == "flashcards":
+            notes = request.form.get("notes")
+
+            if notes:
+                sentences = [s.strip() for s in notes.split(".") if s.strip()]
+
+                for sentence in sentences[:5]:
+                    flashcards.append({
+                        "question": f"What is important about: {sentence[:50]}?",
+                        "answer": sentence
+                    })
 
     return render_template("index.html", courses=courses, flashcards=flashcards)
 

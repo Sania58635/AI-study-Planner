@@ -9,6 +9,21 @@
     <h1>AI Study Planner</h1>
     <p>Track classes, deadlines, and generate simple flashcards.</p>
 
+    <section class="generator">
+      <h2>Add Assignment</h2>
+
+      <form method="POST">
+        <input type="hidden" name="form_type" value="assignment">
+
+        <input type="text" name="course_name" placeholder="Course name" required>
+        <input type="text" name="deadline" placeholder="Assignment name" required>
+        <input type="text" name="due_date" placeholder="Due date" required>
+        <input type="number" name="progress" placeholder="Progress %" min="0" max="100" required>
+
+        <button type="submit">Add Assignment</button>
+      </form>
+    </section>
+
     <section class="courses">
       {% for course in courses %}
         <div class="card">
@@ -29,12 +44,15 @@
       <h2>Generate Flashcards</h2>
 
       <form method="POST">
+        <input type="hidden" name="form_type" value="flashcards">
+
         <textarea name="notes" placeholder="Paste your class notes here..."></textarea>
         <button type="submit">Generate</button>
       </form>
 
       {% if flashcards %}
         <h2>Your Flashcards</h2>
+
         {% for card in flashcards %}
           <div class="flashcard">
             <h3>{{ card.question }}</h3>
