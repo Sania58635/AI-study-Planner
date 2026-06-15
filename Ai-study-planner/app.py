@@ -13,25 +13,21 @@ courses = [
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    flashcards = []
 
     if request.method == "POST":
-        course_name = request.form.get("course_name")
-        deadline = request.form.get("deadline")
-        due_date = request.form.get("due_date")
-        progress = request.form.get("progress")
+        notes = request.form.get("notes")
 
-        new_course = {
-            "name": course_name,
-            "deadline": deadline,
-            "due_date": due_date,
-            "progress": int(progress),
-        }
+        if notes:
+            sentences = [s.strip() for s in notes.split(".") if s.strip()]
 
-        courses.append(new_course)
+            for sentence in sentences[:5]:
+                flashcards.append({
+                    "question": f"What is important about: {sentence[:50]}?",
+                    "answer": sentence
+                })
 
-        return redirect("/")
-
-    return render_template("index.html", courses=courses, flashcards=[])
+    return render_template("index.html", courses=courses, flashcards=flashcards)
 
 if __name__ == "__main__":
     app.run(debug=True)
