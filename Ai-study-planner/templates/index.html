@@ -1,64 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AI Study Planner</title>
+  <title>School Calendar Planner</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <main>
-    <h1>AI Study Planner</h1>
-    <p>Track classes, deadlines, and generate simple flashcards.</p>
+    <section class="header">
+      <h1>School Calendar Planner</h1>
+      <p>Keep track of assignments, tests, projects, and deadlines in one simple place.</p>
+    </section>
 
-    <section class="generator">
-      <h2>Add Assignment</h2>
+    <section class="panel">
+      <h2>Add School Work</h2>
 
-      <form method="POST">
-        <input type="hidden" name="form_type" value="assignment">
+      <form method="POST" class="task-form">
+        <input type="text" name="title" placeholder="Assignment or task" required>
+        <input type="text" name="class_name" placeholder="Class name" required>
+        <input type="date" name="due_date" required>
 
-        <input type="text" name="course_name" placeholder="Course name" required>
-        <input type="text" name="deadline" placeholder="Assignment name" required>
-        <input type="text" name="due_date" placeholder="Due date" required>
-        <input type="number" name="progress" placeholder="Progress %" min="0" max="100" required>
+        <select name="priority" required>
+          <option value="">Priority</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
 
-        <button type="submit">Add Assignment</button>
+        <button type="submit">Add to Calendar</button>
       </form>
     </section>
 
-    <section class="courses">
-      {% for course in courses %}
-        <div class="card">
-          <h2>{{ course.name }}</h2>
-          <p><strong>Next deadline:</strong> {{ course.deadline }}</p>
-          <p><strong>Due:</strong> {{ course.due_date }}</p>
+    <section class="calendar">
+      <h2>Upcoming School Work</h2>
 
-          <div class="bar">
-            <div class="fill"></div>
-          </div>
+      {% if tasks %}
+        <div class="task-grid">
+          {% for task in tasks %}
+            <div class="task-card priority-{{ task.priority.lower() }}">
+              <div>
+                <p class="date">{{ task.due_date }}</p>
+                <h3>{{ task.title }}</h3>
+                <p class="class-name">{{ task.class_name }}</p>
+              </div>
 
-          <p>{{ course.progress }}% complete</p>
+              <div class="task-footer">
+                <span>{{ task.priority }} Priority</span>
+                <a href="/delete/{{ task.id }}">Delete</a>
+              </div>
+            </div>
+          {% endfor %}
         </div>
-      {% endfor %}
-    </section>
-
-    <section class="generator">
-      <h2>Generate Flashcards</h2>
-
-      <form method="POST">
-        <input type="hidden" name="form_type" value="flashcards">
-
-        <textarea name="notes" placeholder="Paste your class notes here..."></textarea>
-        <button type="submit">Generate</button>
-      </form>
-
-      {% if flashcards %}
-        <h2>Your Flashcards</h2>
-
-        {% for card in flashcards %}
-          <div class="flashcard">
-            <h3>{{ card.question }}</h3>
-            <p>{{ card.answer }}</p>
-          </div>
-        {% endfor %}
+      {% else %}
+        <p class="empty">No school work added yet.</p>
       {% endif %}
     </section>
   </main>
