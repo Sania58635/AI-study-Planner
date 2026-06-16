@@ -7,53 +7,150 @@
 <body>
   <main>
     <section class="header">
-      <h1>School Calendar Planner</h1>
-      <p>Keep track of assignments, tests, projects, and deadlines in one simple place.</p>
+      <div class="header-content">
+        <p class="eyebrow">Student Deadline Organizer</p>
+        <h1>School Calendar Planner</h1>
+        <p>Track school work by week, month, or year.</p>
+      </div>
     </section>
 
-    <section class="panel">
-      <h2>Add School Work</h2>
+    <section class="content">
+      <section class="panel">
+        <h2>Add School Work</h2>
 
-      <form method="POST" class="task-form">
-        <input type="text" name="title" placeholder="Assignment or task" required>
-        <input type="text" name="class_name" placeholder="Class name" required>
-        <input type="date" name="due_date" required>
+        <form method="POST" class="task-form">
+          <input type="text" name="title" placeholder="Assignment or task" required>
+          <input type="text" name="class_name" placeholder="Class name" required>
+          <input type="date" name="due_date" required>
 
-        <select name="priority" required>
-          <option value="">Priority</option>
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-        </select>
+          <select name="priority" required>
+            <option value="">Priority</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
 
-        <button type="submit">Add to Calendar</button>
-      </form>
-    </section>
+          <button type="submit">Add to Calendar</button>
+        </form>
+      </section>
 
-    <section class="calendar">
-      <h2>Upcoming School Work</h2>
+      <section class="calendar-panel">
+        <div class="tabs">
+          <button class="tab-button active" onclick="showTab('month')">Monthly</button>
+          <button class="tab-button" onclick="showTab('week')">Weekly</button>
+          <button class="tab-button" onclick="showTab('year')">Yearly</button>
+        </div>
 
-      {% if tasks %}
-        <div class="task-grid">
-          {% for task in tasks %}
-            <div class="task-card priority-{{ task.priority.lower() }}">
-              <div>
+        <div id="month" class="tab-view active">
+          <p class="eyebrow dark">Monthly View</p>
+          <h2>{{ month_name }}</h2>
+
+          <div class="calendar-grid">
+            <div class="weekday">Sun</div>
+            <div class="weekday">Mon</div>
+            <div class="weekday">Tue</div>
+            <div class="weekday">Wed</div>
+            <div class="weekday">Thu</div>
+            <div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+
+            {% for week in calendar_weeks %}
+              {% for day in week %}
+                <div class="calendar-day {% if not day.in_month %}muted{% endif %} {% if day.is_today %}today{% endif %}">
+                  <span class="day-number">{{ day.number }}</span>
+
+                  {% for task in day.tasks %}
+                    <div class="calendar-task priority-{{ task.priority.lower() }}">
+                      {{ task.title }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <div id="week" class="tab-view">
+          <p class="eyebrow dark">Weekly View</p>
+          <h2>{{ week_title }}</h2>
+
+          <div class="week-grid">
+            {% for day in week_days %}
+              <div class="week-day {% if day.is_today %}today{% endif %}">
+                <h3>{{ day.name }}</h3>
+                <p>{{ day.date }}</p>
+
+                {% if day.tasks %}
+                  {% for task in day.tasks %}
+                    <div class="calendar-task priority-{{ task.priority.lower() }}">
+                      {{ task.title }} - {{ task.class_name }}
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <p class="small-empty">No work due</p>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div id="year" class="tab-view">
+          <p class="eyebrow dark">Yearly View</p>
+          <h2>{{ year_title }}</h2>
+
+          <div class="year-grid">
+            {% for month in year_months %}
+              <div class="month-card">
+                <h3>{{ month.name }}</h3>
+                <p>{{ month.task_count }} item(s)</p>
+
+                {% for task in month.tasks %}
+                  <div class="calendar-task priority-{{ task.priority.lower() }}">
+                    {{ task.title }}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <section class="calendar">
+        <h2>Upcoming School Work</h2>
+
+        {% if tasks %}
+          <div class="task-grid">
+            {% for task in tasks %}
+              <div class="task-card priority-{{ task.priority.lower() }}">
                 <p class="date">{{ task.due_date }}</p>
                 <h3>{{ task.title }}</h3>
                 <p class="class-name">{{ task.class_name }}</p>
-              </div>
 
-              <div class="task-footer">
-                <span>{{ task.priority }} Priority</span>
-                <a href="/delete/{{ task.id }}">Delete</a>
+                <div class="task-footer">
+                  <span>{{ task.priority }} Priority</span>
+                  <a href="/delete/{{ task.id }}">Delete</a>
+                </div>
               </div>
-            </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p class="empty">No school work added yet.</p>
-      {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty">No school work added yet.</p>
+        {% endif %}
+      </section>
     </section>
   </main>
+
+  <script>
+    function showTab(tabName) {
+      const views = document.querySelectorAll(".tab-view");
+      const buttons = document.querySelectorAll(".tab-button");
+
+      views.forEach((view) => view.classList.remove("active"));
+      buttons.forEach((button) => button.classList.remove("active"));
+
+      document.getElementById(tabName).classList.add("active");
+      event.target.classList.add("active");
+    }
+  </script>
 </body>
 </html>
